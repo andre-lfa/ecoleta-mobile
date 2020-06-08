@@ -1,17 +1,49 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, Image } from 'react-native';
 import { StyleSheet } from 'react-native';
-import Constants from 'expo-constants';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { Feather as Icon, FontAwesome } from '@expo/vector-icons';
 import { RectButton } from 'react-native-gesture-handler';
+import api from '../../services/api';
+
+interface Params {
+  point_id: number
+}
+
+interface Data {
+  point: {
+    image: string,
+    name: string,
+    email: string,
+    whatsapp: string, 
+    city: string,
+    uf: string,
+  },
+  items: {
+    title: string
+  }[]
+}
 
 const Detail = () => {
+    const [point, setPoint] = useState({} as Data); 
     const navigation = useNavigation();
+    const route = useRoute();
+
+    const routeParams = route.params as Params;
 
     function handleNavigateBack() {
         navigation.goBack();
+    }
+
+    useEffect(() => {
+      api.get(`points/${routeParams.point_id}`).then(response => {
+        setPoint(response.data);
+      });
+    }, []); 
+
+    if(!point.point) {
+      return null;
     }
 
     return(
@@ -20,19 +52,19 @@ const Detail = () => {
             <TouchableOpacity onPress={handleNavigateBack}>
                     <Icon name="arrow-left" size={20} color="#34cb79" />
             </TouchableOpacity>
-            <Image style={styles.pointImage} source={{ uri : "https://images.unsplash.com/photo-1556767576-5ec41e3239ea?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60"}}/>
+            <Image style={styles.pointImage} source={{ uri : point.point.image }}/>
             <Text style={styles.pointName}>
-                Mercado X
+                {point.point.name}
             </Text>
             <Text style={styles.pointItems}>
-                Lâmpadas, Baterias
+                {point.items.map(item => item.title).join(', ')}
             </Text>
             <View style={styles.address}>
             <Text style={styles.addressTitle}>
                 Endereço
             </Text>
             <Text style={styles.addressContent}>
-                Campos dos Goytacazes, RJ
+                {point.point.city + ', ' + point.point.uf}
             </Text>
         </View>
         </View>
