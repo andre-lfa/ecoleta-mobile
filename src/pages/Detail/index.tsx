@@ -6,6 +6,8 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import { Feather as Icon, FontAwesome } from '@expo/vector-icons';
 import { RectButton } from 'react-native-gesture-handler';
 import api from '../../services/api';
+import * as MailComposer from 'expo-mail-composer';
+
 
 interface Params {
   point_id: number
@@ -34,6 +36,13 @@ const Detail = () => {
 
     function handleNavigateBack() {
         navigation.goBack();
+    }
+
+    function handleComposeMail() {
+      MailComposer.composeAsync({
+        subject: 'Interesse na coleta de registros',
+        recipients: [point.point.email]
+      });
     }
 
     useEffect(() => {
@@ -75,7 +84,7 @@ const Detail = () => {
                     WhatsApp
                 </Text>
             </RectButton>
-            <RectButton style={styles.button}>
+            <RectButton style={styles.button} onPress={handleComposeMail}>
                 <Icon name="mail" size={20} color='#FFF'/>
                 <Text style={styles.buttonText}>
                     E-mail
