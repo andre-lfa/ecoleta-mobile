@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Image } from 'react-native';
+import { View, Text, Image, Linking } from 'react-native';
 import { StyleSheet } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { useNavigation, useRoute } from '@react-navigation/native';
@@ -45,6 +45,10 @@ const Detail = () => {
       });
     }
 
+    function handleWhatsApp() {
+      Linking.openURL(`whatsapp://send?phone=${point.point.whatsapp}$text=Tenho interesse sobre a coleta de resíduos.`);
+    }
+
     useEffect(() => {
       api.get(`points/${routeParams.point_id}`).then(response => {
         setPoint(response.data);
@@ -78,7 +82,7 @@ const Detail = () => {
         </View>
         </View>
         <View style={styles.footer}>
-            <RectButton style={styles.button}>
+            <RectButton style={styles.button} onPress={handleWhatsApp}>
                 <FontAwesome name="whatsapp" size={20} color='#FFF'/>
                 <Text style={styles.buttonText}>
                     WhatsApp
